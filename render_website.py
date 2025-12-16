@@ -17,7 +17,7 @@ def on_reload():
         meta_data_json = file.read()
 
     meta_data = json.loads(meta_data_json)
-    books_on_page = 20
+    books_on_page = 10
     pages = list(chunked(meta_data, books_on_page))
     book_cols = 2
 
