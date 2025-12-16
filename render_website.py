@@ -17,12 +17,15 @@ def on_reload():
         meta_data_json = file.read()
 
     meta_data = json.loads(meta_data_json)
-
-    pages = list(chunked(meta_data, 20))
+    books_on_page = 20
+    pages = list(chunked(meta_data, books_on_page))
+    book_cols = 2
 
     for index, page in enumerate(pages, start=1):
         rendered_page = template.render(
-            books=list(chunked(page, 2))
+            books=list(chunked(page, book_cols)),
+            current_page=index,
+            page_count=len(pages)
         )
 
         with open(f'pages/index{index}.html', 'w', encoding="utf8") as file:
