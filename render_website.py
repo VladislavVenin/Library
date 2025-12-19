@@ -1,12 +1,21 @@
 import os
 import json
+import argparse
 
 from livereload import Server
 from more_itertools import chunked
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
-def on_reload():
+def remove_old_htmls():
+    for filename in os.listdir("./pages"):
+        file_path = os.path.join("./pages", filename)
+        extension = os.path.splitext(file_path)[1]
+        if extension == ".html":
+            os.remove(file_path)
+
+
+def on_reload(meta_data_path, cards_count):
     env = Environment(
         loader=FileSystemLoader("."),
         autoescape=select_autoescape(["html", "xml"])
@@ -14,17 +23,19 @@ def on_reload():
 
     template = env.get_template("template.html")
 
-    with open("meta_data.json", "r", encoding=("UTF-8")) as file:
+    with open(meta_data_path, "r", encoding=("UTF-8")) as file:
         meta_data_json = file.read()
 
     meta_data = json.loads(meta_data_json)
-    books_on_page = 10
-    pages = list(chunked(meta_data, books_on_page))
-    book_cols = 2
+    cards_on_page = cards_count
+    pages = list(chunked(meta_data, cards_on_page))
+    cards_cols = 2
+
+    remove_old_htmls()
 
     for index, page in enumerate(pages, start=1):
         rendered_page = template.render(
-            books=list(chunked(page, book_cols)),
+            books=list(chunked(page, cards_cols)),
             current_page=index,
             page_count=len(pages)
         )
@@ -34,11 +45,31 @@ def on_reload():
 
 
 def main():
-    os.makedirs("pages", exist_ok=True)
-    on_reload()
+    parser = argparse.ArgumentParser(
+        description="Скрипт для рендера страниц по html шаблону и запуска сервера"
+    )
+    parser.add_argument(
+        "-p", "--path",
+        help="Путь к файлу с данными для карточек на сайте, по стандарту 'meta_data.json'",
+        default="meta_data.json"
+    )
+    parser.add_argument(
+        "-c", "--cards",
+        type=int,
+        help="Кол-во карточек на странице",
+        default=10
+    )
+    args = parser.parse_args()
 
+    os.makedirs("pages", exist_ok=True)
+
+    def reload_with_args():
+        on_reload(args.path, args.cards)
+
+    reload_with_args()
     server = Server()
-    server.watch("template.html", on_reload)
+    server.watch("template.html", reload_with_args)
+    server.watch(args.path, reload_with_args)
     server.serve(root=".", default_filename="pages/index1.html")
 
 
