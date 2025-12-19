@@ -38,7 +38,7 @@ def main():
 
     server = Server()
     server.watch('template.html', on_reload)
-    server.serve(root="./pages", default_filename="index1.html")
+    server.serve(root=".", default_filename="pages/index1.html")
 
 
 if __name__ == '__main__':

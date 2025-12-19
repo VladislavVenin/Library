@@ -14,6 +14,6 @@ pip install -r requirements.txt
 ```
 python render_website.py
 ```
-далее перейдите по ссылке [`http://127.0.0.1:5500/`](http://127.0.0.1:5500/)
+далее перейдите по ссылке [`http://127.0.0.1:5500/pages/index1.html`](http://127.0.0.1:5500/pages/index1.html)
 
 <img width="1920" height="960" alt="image" src="https://github.com/user-attachments/assets/0c84090b-7ec7-4b30-97e8-caac29079f25" />
