@@ -44,7 +44,13 @@ def on_reload(meta_data_path, cards_count):
             file.write(rendered_page)
 
 
+def reload_with_args():
+    on_reload(args.path, args.cards)
+
+
 def main():
+    global args
+
     parser = argparse.ArgumentParser(
         description="Скрипт для рендера страниц по html шаблону и запуска сервера"
     )
@@ -62,9 +68,6 @@ def main():
     args = parser.parse_args()
 
     os.makedirs("pages", exist_ok=True)
-
-    def reload_with_args():
-        on_reload(args.path, args.cards)
 
     reload_with_args()
     server = Server()
